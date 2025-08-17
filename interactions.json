@@ -1,0 +1,72 @@
+[
+  {
+    "a": "warfarin",
+    "b": "trimethoprim-sulfamethoxazole",
+    "severity": "Major",
+    "mechanism": "CYP2C9 inhibition → reduced warfarin metabolism; potentiates anticoagulation",
+    "note": "Avoid if possible; consider alternative. If used, reduce warfarin dose and monitor INR closely."
+  },
+  {
+    "a": "warfarin",
+    "b": "amiodarone",
+    "severity": "Major",
+    "mechanism": "CYP inhibition → reduced warfarin clearance",
+    "note": "Expect increased INR; lower warfarin dose and increase INR monitoring."
+  },
+  {
+    "a": "simvastatin",
+    "b": "clarithromycin",
+    "severity": "Major",
+    "mechanism": "CYP3A4 inhibition → ↑ simvastatin concentration",
+    "note": "Avoid combination; high risk of myopathy/rhabdomyolysis."
+  },
+  {
+    "a": "lithium",
+    "b": "nsaid",
+    "severity": "Moderate–Major",
+    "mechanism": "Reduced renal lithium clearance",
+    "note": "Avoid or monitor lithium levels and adjust dose; counsel on toxicity."
+  },
+  {
+    "a": "linezolid",
+    "b": "ssri",
+    "severity": "Major",
+    "mechanism": "MAOI activity → risk of serotonin syndrome",
+    "note": "Avoid or hold serotonergic agents; monitor closely if combined."
+  },
+  {
+    "a": "metronidazole",
+    "b": "warfarin",
+    "severity": "Major",
+    "mechanism": "CYP2C9 inhibition → ↑ warfarin effect",
+    "note": "Monitor INR and consider warfarin dose reduction."
+  },
+  {
+    "a": "spironolactone",
+    "b": "ace inhibitor",
+    "severity": "Moderate",
+    "mechanism": "Additive hyperkalemia risk",
+    "note": "Monitor K+/renal function; consider dose adjustments."
+  },
+  {
+    "a": "clopidogrel",
+    "b": "omeprazole",
+    "severity": "Moderate",
+    "mechanism": "CYP2C19 inhibition → ↓ clopidogrel activation",
+    "note": "Prefer pantoprazole if PPI indicated."
+  },
+  {
+    "a": "sildenafil",
+    "b": "nitroglycerin",
+    "severity": "Major",
+    "mechanism": "Additive vasodilation → severe hypotension",
+    "note": "Contraindicated; observe washout periods."
+  },
+  {
+    "a": "rifampin",
+    "b": "oral contraceptive",
+    "severity": "Major",
+    "mechanism": "CYP induction → ↓ contraceptive efficacy",
+    "note": "Use alternative contraception during and after therapy."
+  }
+]
