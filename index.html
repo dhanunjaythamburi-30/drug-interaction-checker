@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>DDI Quick Screen (Educational)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    :root { color-scheme: light dark; }
+    body{font-family:system-ui, -apple-system, Segoe UI, Roboto, Arial; margin:24px; max-width:800px; line-height:1.5}
+    h1{margin-bottom:8px}
+    .card{border:1px solid #ddd; border-radius:12px; padding:16px; margin:16px 0}
+    input{width:100%; padding:10px; margin:8px 0; border:1px solid #bbb; border-radius:8px}
+    button{padding:10px 14px; border:0; border-radius:8px; background:#2563eb; color:#fff; cursor:pointer}
+    button:disabled{opacity:0.6; cursor:not-allowed}
+    .row{display:grid; grid-template-columns:1fr 1fr; gap:12px}
+    .muted{color:#666; font-size:0.92rem}
+    .result{padding:12px; border-radius:8px; background:#f7f7f7; margin-top:12px; white-space:pre-wrap}
+    .pill{display:inline-block; padding:2px 8px; border-radius:999px; font-size:0.85rem; margin-right:6px}
+    .major{background:#fee2e2; color:#7f1d1d; border:1px solid #fecaca}
+    .moderate{background:#ffedd5; color:#7c2d12; border:1px solid #fed7aa}
+    .minor{background:#dcfce7; color:#14532d; border:1px solid #bbf7d0}
+    footer{margin-top:24px; font-size:0.9rem; color:#666}
+    @media (max-width:640px){ .row{grid-template-columns:1fr} }
+  </style>
+</head>
+<body>
+  <h1>Drug–Drug Interaction Quick Screen</h1>
+  <p class="muted">Educational tool for rapid screening. Always verify with a comprehensive interaction resource and institutional policies.</p>
+
+  <div class="card">
+    <div class="row">
+      <div>
+        <label for="drugA">Drug A</label>
+        <input id="drugA" placeholder="e.g., warfarin">
+      </div>
+      <div>
+        <label for="drugB">Drug B</label>
+        <input id="drugB" placeholder="e.g., trimethoprim-sulfamethoxazole or TMP-SMX">
+      </div>
+    </div>
+    <button id="checkBtn">Check Interaction</button>
+    <div id="out" class="result" aria-live="polite"></div>
+  </div>
+
+  <div class="card">
+    <strong>Tips</strong>
+    <ul>
+      <li>Try common synonyms (e.g., “TMP-SMX”, “co-trimoxazole”, “trimethoprim-sulfamethoxazole”).</li>
+      <li>Use class names for broader checks (e.g., “NSAID”).</li>
+    </ul>
+  </div>
+
+  <footer>
+    © 2025 Pharmaverse — For education only. Not medical advice.
+  </footer>
+
+<script>
+let ddidata = [];
+const aliases = {
+  "tmp-smx": "trimethoprim-sulfamethoxazole",
+  "co-trimoxazole": "trimethoprim-sulfamethoxazole",
+  "bactrim": "trimethoprim-sulfamethoxazole",
+  "septra": "trimethoprim-sulfamethoxazole",
+  "apap": "acetaminophen",
+  "paracetamol": "acetaminophen",
+  "nsaid": "nsaid",
+  "coumadin": "warfarin",
+  "lipitor": "atorvastatin"
+};
+
+function norm(s){ return s.trim().toLowerCase(); }
+function canonical(s){ const n = norm(s); return aliases[n] || n; }
+function severityClass(sev){
+  const s = sev.toLowerCase();
+  if(s.includes("major")) return "major";
+  if(s.includes("moderate")) return "moderate";
+  return "minor";
+}
+
+async function loadData(){
+  try{
+    const r = await fetch('interactions.json', {cache:'no-store'});
+    ddidata = await r.json();
+  }catch(e){
+    console.error("Failed to load interactions.json", e);
+  }
+}
+
+function findHit(a, b){
+  let hit = ddidata.find(x=>(x.a===a && x.b===b)||(x.a===b && x.b===a));
+  if(hit) return hit;
+
+  // simple class-based example, e.g., lithium + nsaid
+  hit = ddidata.find(x=>{
+    const pair1 = (x.a===a && (x.b===b || x.b==="nsaid" && b.includes("nsaid")));
+    const pair2 = (x.b===a && (x.a===b || x.a==="nsaid" && a.includes("nsaid")));
+    return pair1 || pair2;
+  });
+  return hit || null;
+}
+
+function render(hit, A, B){
+  const out = document.getElementById('out');
+  if(!A || !B){
+    out.textContent = "Enter two drug names.";
+    return;
+  }
+  if(!hit){
+    out.textContent = "No match found in this quick list. Consult a comprehensive DDI reference.";
+    return;
+  }
+  const sevClass = severityClass(hit.severity);
+  out.innerHTML =
+`<div class="pill ${sevClass}">${hit.severity}</div>
+<b>${A}</b> + <b>${B}</b>
+• Mechanism: ${hit.mechanism}
+• Note: ${hit.note}
+
+Actions (general): consider alternatives, dose adjustments, or monitoring based on clinical context and guidelines.`;
+}
+
+document.getElementById('checkBtn').addEventListener('click', ()=>{
+  const Araw = document.getElementById('drugA').value;
+  const Braw = document.getElementById('drugB').value;
+  const A = canonical(Araw);
+  const B = canonical(Braw);
+  if(!A || !B){ render(null, Araw, Braw); return; }
+  const hit = findHit(A, B);
+  render(hit, Araw || A, Braw || B);
+});
+
+loadData();
+</script>
+</body>
+</html>
